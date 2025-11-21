@@ -20,7 +20,15 @@ def load_zip_list(zip_file: Path) -> list[str]:
     # Split on any whitespace or commas
     raw_zips = [z for z in re.split(r"[,\s]+", content) if z]
     # Extract first 5 digits from ZIP+4 format (e.g., 90095-1478 -> 90095)
-    return [z.split("-")[0].zfill(5) for z in raw_zips]
+    # Only keep entries that start with digits (filter out phone numbers, etc.)
+    result = []
+    for z in raw_zips:
+        # Extract just the numeric part before any hyphen
+        base = z.split("-")[0]
+        # Only include if it's purely numeric
+        if base.isdigit():
+            result.append(base.zfill(5))
+    return result
 
 
 def fetch_zip_data(url: str = DATA_URL) -> dict[str, set[str]]:
@@ -55,7 +63,7 @@ def fetch_redivis_data(zip_codes: list[str]) -> dict[str, set[str]]:
 
     try:
         # Convert ZIP codes to integers for the query
-        zip_ints = ", ".join(zip_codes)
+        zip_ints = ", ".join(str(int(z)) for z in zip_codes)
 
         # Query Redivis
         organization = redivis.organization("StanfordPHS")
@@ -124,9 +132,21 @@ def write_rows(rows: list[tuple[str, str]], output_path: Path | None):
 
 def main(args: list[str]):
     if not args:
-        raise SystemExit("Usage: python zip_to_county.py <zip_file> [output_csv]")
+        raise SystemExit("Usage: python zip_to_county.py <zip_file> [output_csv] [--missing-zips missing.txt]")
     zip_file = Path(args[0])
     zips = load_zip_list(zip_file)
+
+    # Parse optional arguments
+    output_path = None
+    missing_zips_file = None
+    i = 1
+    while i < len(args):
+        if args[i] == "--missing-zips" and i + 1 < len(args):
+            missing_zips_file = Path(args[i + 1])
+            i += 2
+        else:
+            output_path = Path(args[i])
+            i += 1
 
     # Fetch primary data source
     print("Fetching ZIP data from GitHub...", file=sys.stderr)
@@ -159,8 +179,13 @@ def main(args: list[str]):
             file=sys.stderr,
         )
 
+    # Write missing ZIPs to file if requested
+    final_missing = [z for z in zips if z not in mapping]
+    if missing_zips_file and final_missing:
+        missing_zips_file.write_text("\n".join(final_missing) + "\n", encoding="utf-8")
+        print(f"Wrote {len(final_missing)} missing ZIPs to {missing_zips_file}", file=sys.stderr)
+
     rows = build_rows(zips, mapping)
-    output_path = Path(args[1]) if len(args) > 1 else None
     write_rows(rows, output_path)
 
 
