@@ -19,7 +19,10 @@ A Python utility that maps US ZIP codes to their corresponding counties. Uses mu
 pip install -r requirements.txt
 ```
 
-3. (Optional) Create a [Redivis account](https://redivis.com/) for enhanced coverage
+3. **Create a [Redivis account](https://stanford.redivis.com/datasets/b36a-8fmm08tgf?createAccount)** (required for enhanced coverage)
+   - The script will open a browser window for authentication on first run
+   - Free account provides access to Stanford's ZIP code dataset
+   - Without this, ~31% of missing ZIPs won't be filled
 
 ## Usage
 
@@ -82,7 +85,8 @@ zip,county_and_state
 - **Source**: https://stanford.redivis.com/datasets/b36a-8fmm08tgf
 - **Coverage**: Historical crosswalk data from 2010-2019
 - **Updates**: Quarterly through April 2019
-- **Access**: Requires free Redivis account (first use opens browser for authentication)
+- **Access**: Requires free [Redivis account](https://stanford.redivis.com/datasets/b36a-8fmm08tgf?createAccount)
+- **Authentication**: On first use, the script will automatically open your browser to authenticate
 
 ## Files
 
@@ -150,7 +154,7 @@ Contributions welcome! Areas for improvement:
 Install with: `pip install redivis`
 
 ### "Browser opened for authentication"
-This is expected on first use. Log in to your Redivis account and the script will continue.
+This is expected on first use. The script will automatically open your browser to authenticate with Redivis. Create a free account at https://stanford.redivis.com/datasets/b36a-8fmm08tgf?createAccount if you haven't already, then log in. Once authenticated, the script will continue automatically and cache your credentials for future runs.
 
 ### "Still missing X ZIPs"
 Some ZIPs are special-purpose and may not have standard county assignments. These will show as "N/A" in the output.
