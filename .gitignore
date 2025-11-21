@@ -38,9 +38,14 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Input files
+!example_input.txt
+zip_codes_raw.txt
+*.sql
+
 # Output files
 *.csv
-!example_input.txt
+
 
 # Redivis cache
 .redivis/
