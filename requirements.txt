@@ -1,0 +1,6 @@
+# Core dependencies (always required)
+# No additional packages needed for basic functionality
+
+# Optional dependencies for Redivis fallback
+redivis>=0.18.0
+pandas>=2.0.0
