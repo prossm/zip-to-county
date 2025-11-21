@@ -17,6 +17,8 @@ DATA_URL = "https://raw.githubusercontent.com/scpike/us-state-county-zip/refs/he
 
 def load_zip_list(zip_file: Path) -> list[str]:
     content = zip_file.read_text(encoding="utf-8")
+    # Normalize en-dash (–) and em-dash (—) to regular hyphen (-)
+    content = content.replace("–", "-").replace("—", "-")
     # Split on any whitespace or commas
     raw_zips = [z for z in re.split(r"[,\s]+", content) if z]
     # Extract first 5 digits from ZIP+4 format (e.g., 90095-1478 -> 90095)
@@ -25,8 +27,9 @@ def load_zip_list(zip_file: Path) -> list[str]:
     for z in raw_zips:
         # Extract just the numeric part before any hyphen
         base = z.split("-")[0]
-        # Only include if it's purely numeric
-        if base.isdigit():
+        # Only include if it's purely numeric and at least 5 digits
+        # (valid ZIP codes are 5 digits, though some may be written as 3-4 digits)
+        if base.isdigit() and len(base) >= 5:
             result.append(base.zfill(5))
     return result
 
