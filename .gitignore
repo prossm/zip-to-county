@@ -22,6 +22,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+!requirements.txt
 
 # Virtual environments
 .venv
@@ -40,7 +41,7 @@ Thumbs.db
 
 # Input files
 !example_input.txt
-zip_codes_raw.txt
+*.txt
 *.sql
 
 # Output files

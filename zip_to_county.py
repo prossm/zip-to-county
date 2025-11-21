@@ -18,7 +18,9 @@ DATA_URL = "https://raw.githubusercontent.com/scpike/us-state-county-zip/refs/he
 def load_zip_list(zip_file: Path) -> list[str]:
     content = zip_file.read_text(encoding="utf-8")
     # Split on any whitespace or commas
-    return [z for z in re.split(r"[,\s]+", content) if z]
+    raw_zips = [z for z in re.split(r"[,\s]+", content) if z]
+    # Extract first 5 digits from ZIP+4 format (e.g., 90095-1478 -> 90095)
+    return [z.split("-")[0].zfill(5) for z in raw_zips]
 
 
 def fetch_zip_data(url: str = DATA_URL) -> dict[str, set[str]]:
